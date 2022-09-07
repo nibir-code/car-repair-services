@@ -29,12 +29,20 @@ var useFirebase = function useFirebase() {
       user = _useState2[0],
       setUser = _useState2[1];
 
+  var _useState3 = (0, _react.useState)(true),
+      _useState4 = _slicedToArray(_useState3, 2),
+      isLoading = _useState4[0],
+      setIsLoading = _useState4[1];
+
   var auth = (0, _auth.getAuth)();
 
   var signInUsingGoogle = function signInUsingGoogle() {
+    setIsLoading(true);
     var googleProvider = new _auth.GoogleAuthProvider();
     (0, _auth.signInWithPopup)(auth, googleProvider).then(function (result) {
       setUser(result.user);
+    })["finally"](function () {
+      return setIsLoading(false);
     });
   }; //observe user state change
 
@@ -50,6 +58,8 @@ var useFirebase = function useFirebase() {
         // ...
         setUser({});
       }
+
+      setIsLoading(false);
     });
     return function () {
       return unsubscribed;
@@ -57,12 +67,16 @@ var useFirebase = function useFirebase() {
   }, []);
 
   var logOut = function logOut() {
+    setIsLoading(true);
     (0, _auth.signOut)(auth).then(function (result) {})["catch"](function (error) {// An error happened.
+    })["finally"](function () {
+      return setIsLoading(false);
     });
   };
 
   return {
     user: user,
+    isLoading: isLoading,
     signInUsingGoogle: signInUsingGoogle,
     logOut: logOut
   };
